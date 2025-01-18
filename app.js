@@ -11,6 +11,8 @@ mongoose.set("strictQuery", true); // Set because of: (node:14092) [MONGOOSE] De
 
 const app = express();
 
+app.use(express.json());
+
 app.use((req, res, next) => {
   req.user = {
     _id: "5d8b8592978f8bd833ca8133",
