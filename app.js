@@ -2,6 +2,8 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 
+const mainRouter = require("./routes/index");
+
 const { PORT = 3001 } = process.env;
 
 mongoose.set("strictQuery", true); // Set because of: (node:14092) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7.
@@ -22,6 +24,8 @@ mongoose
     console.log("Connected to DB");
   })
   .catch(console.error);
+
+app.use("/", mainRouter);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
