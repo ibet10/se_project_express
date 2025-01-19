@@ -1,20 +1,33 @@
 const ClothingItem = require("../models/clothingItems");
 
+const {
+  OK,
+  CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+} = require("../utils/errors");
+
 // POST /item
 
 const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
 
-  const { name, weather, imageURL } = req.body;
+  const owner = req.user._id;
+  const { name, weather, imageUrl } = req.body;
 
-  ClothingItem.create({ name, weather, imageURL })
+  ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
       console.log(item);
-      res.send({ data: item });
+      res.status(CREATED).send({ data: item });
     })
     .catch((e) => {
-      res.status(500).send({ message: e.message });
+      console.error(e);
+      if (e.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: e.message });
+      }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
     });
 };
 
@@ -23,10 +36,12 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => {
-      res.status(200).send(items);
+      res.status(OK).send(items);
     })
     .catch((e) => {
-      res.status(500).send({ message: e.message });
+      console.error(e);
+
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
     });
 };
 
@@ -38,9 +53,16 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(204).send({}))
+    .then((item) => res.status(OK).send({ data: item }))
     .catch((e) => {
-      res.status(500).send({ message: e.message });
+      console.error(e);
+      if (e.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: e.message });
+      }
+      if (e.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: e.message });
+      }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
     });
 };
 
