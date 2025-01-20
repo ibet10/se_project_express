@@ -1,7 +1,6 @@
 const ClothingItem = require("../models/clothingItems");
 
 const {
-  OK,
   CREATED,
   BAD_REQUEST,
   NOT_FOUND,
@@ -25,9 +24,13 @@ const createItem = (req, res) => {
     .catch((e) => {
       console.error(e);
       if (e.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: e.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Item not found." });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
     });
 };
 
@@ -36,12 +39,14 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => {
-      res.status(OK).send(items);
+      res.send(items);
     })
     .catch((e) => {
       console.error(e);
 
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
     });
 };
 
@@ -53,16 +58,22 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(OK).send({ data: item }))
+    .then((item) => res.send({ data: item }))
     .catch((e) => {
       console.error(e);
       if (e.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: e.message });
+        return res
+          .status(NOT_FOUND)
+          .send({ message: "Failed Request: Item not found." });
       }
       if (e.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: e.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
     });
 };
 
@@ -78,17 +89,23 @@ const likeItem = (req, res) => {
   )
     .orFail()
     .then((item) => {
-      res.status(201).send({ data: item });
+      res.status(CREATED).send({ data: item });
     })
     .catch((e) => {
       console.error(e);
       if (e.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: e.message });
+        return res
+          .status(NOT_FOUND)
+          .send({ message: "Failed Request: Item not found." });
       }
       if (e.name === "CastError") {
-        return res.status(400).send({ message: e.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
       }
-      return res.status(500).send({ message: e.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
     });
 };
 
@@ -103,17 +120,23 @@ const dislikeItem = (req, res) => {
   )
     .orFail()
     .then((item) => {
-      res.status(200).send({ data: item });
+      res.send({ data: item });
     })
     .catch((e) => {
       console.error(e);
       if (e.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: e.message });
+        return res
+          .status(NOT_FOUND)
+          .send({ message: "Failed Request: Item not found." });
       }
       if (e.name === "CastError") {
-        return res.status(400).send({ message: e.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
       }
-      return res.status(500).send({ message: e.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
     });
 };
 

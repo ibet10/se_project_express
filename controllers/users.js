@@ -1,7 +1,6 @@
 const User = require("../models/user");
 
 const {
-  OK,
   CREATED,
   BAD_REQUEST,
   NOT_FOUND,
@@ -19,9 +18,13 @@ const createUser = (req, res) => {
     .catch((e) => {
       console.error(e);
       if (e.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: e.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
     });
 };
 
@@ -30,10 +33,12 @@ const createUser = (req, res) => {
 const getUsers = (req, res) => {
   console.log("GET users");
   User.find({})
-    .then((users) => res.status(OK).send(users))
+    .then((users) => res.send(users))
     .catch((e) => {
       console.error(e);
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
     });
 };
 
@@ -45,16 +50,22 @@ const getUser = (req, res) => {
 
   User.findById(userId)
     .orFail()
-    .then((user) => res.status(OK).send(user))
+    .then((user) => res.send(user))
     .catch((e) => {
       console.error(e);
       if (e.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: e.message });
+        return res
+          .status(NOT_FOUND)
+          .send({ message: "Failed Request: User not found." });
       }
       if (e.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: e.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
     });
 };
 
