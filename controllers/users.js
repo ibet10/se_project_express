@@ -1,10 +1,11 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const { JWT_SECRET } = require("../utils/config");
 
 const {
   CREATED,
   BAD_REQUEST,
-  FORBIDDEN,
+  UNAUTHORIZED,
   NOT_FOUND,
   CONFLICT,
   INTERNAL_SERVER_ERROR,
@@ -32,6 +33,33 @@ const createUser = (req, res) => {
           .status(BAD_REQUEST)
           .send({ message: "Failed Request: Invalid data provided." });
       }
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
+    });
+};
+
+// Login Controller (underconstruction)
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST)
+      .send({ message: "Failed Request: Invalid data provided." });
+  }
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((e) => {
+      res.status(UNAUTHORIZED).send({ message: e.message });
+      console.error(e);
       return res.status(INTERNAL_SERVER_ERROR).send({
         message: "Failed Request: An error has occurred on the server.",
       });
