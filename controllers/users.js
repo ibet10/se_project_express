@@ -1,22 +1,32 @@
+const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
 const {
   CREATED,
   BAD_REQUEST,
+  FORBIDDEN,
   NOT_FOUND,
+  CONFLICT,
   INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
 
-// POST /user
+// POST /user -- UPDATED (underconstruction)
 
 const createUser = (req, res) => {
   console.log("Create user");
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar })
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => res.status(CREATED).send(user))
     .catch((e) => {
       console.error(e);
+      if (e.code === 11000) {
+        return res
+          .status(CONFLICT)
+          .send({ message: "Failed Request: Existing email." });
+      }
       if (e.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)
