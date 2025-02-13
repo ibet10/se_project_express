@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 
 const {
@@ -66,8 +67,8 @@ const login = (req, res) => {
     });
 };
 
-// GET /users
-
+// GET /users -- REMOVE
+/*
 const getUsers = (req, res) => {
   console.log("GET users");
   User.find({})
@@ -79,9 +80,10 @@ const getUsers = (req, res) => {
       });
     });
 };
+*/
 
 // GET /:userId
-
+/*
 const getUser = (req, res) => {
   console.log("GET user by Id");
   const { userId } = req.params;
@@ -106,5 +108,31 @@ const getUser = (req, res) => {
       });
     });
 };
+*/
 
-module.exports = { getUsers, getUser, createUser };
+const getCurrentUser = (req, res) => {
+  console.log("GET user current user");
+  const { _id: userId } = req.user;
+
+  User.findById(userId)
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((e) => {
+      console.error(e);
+      if (e.name === "DocumentNotFoundError") {
+        return res
+          .status(NOT_FOUND)
+          .send({ message: "Failed Request: User not found." });
+      }
+      if (e.name === "CastError") {
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
+      }
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
+    });
+};
+
+module.exports = { getCurrentUser, login, createUser };
