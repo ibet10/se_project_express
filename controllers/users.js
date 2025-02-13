@@ -67,22 +67,32 @@ const login = (req, res) => {
     });
 };
 
-// GET /users -- REMOVE
-/*
-const getUsers = (req, res) => {
-  console.log("GET users");
-  User.find({})
-    .then((users) => res.send(users))
+// GET /:userId
+
+const getCurrentUser = (req, res) => {
+  console.log("GET user current user");
+  const { _id: userId } = req.user;
+
+  User.findById(userId)
+    .orFail()
+    .then((user) => res.send(user))
     .catch((e) => {
       console.error(e);
+      if (e.name === "DocumentNotFoundError") {
+        return res
+          .status(NOT_FOUND)
+          .send({ message: "Failed Request: User not found." });
+      }
+      if (e.name === "CastError") {
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
+      }
       return res.status(INTERNAL_SERVER_ERROR).send({
         message: "Failed Request: An error has occurred on the server.",
       });
     });
 };
-*/
-
-// GET /:userId
 /*
 const getUser = (req, res) => {
   console.log("GET user by Id");
@@ -110,11 +120,18 @@ const getUser = (req, res) => {
 };
 */
 
-const getCurrentUser = (req, res) => {
-  console.log("GET user current user");
+// PATCH /users/me — update profile
+
+const updateCurrentUser = (req, res) => {
+  console.log("UPDATE current user");
+  const { name, avatar } = req.body;
   const { _id: userId } = req.user;
 
-  User.findById(userId)
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    { new: true, runValidators: true }
+  )
     .orFail()
     .then((user) => res.send(user))
     .catch((e) => {
@@ -124,7 +141,7 @@ const getCurrentUser = (req, res) => {
           .status(NOT_FOUND)
           .send({ message: "Failed Request: User not found." });
       }
-      if (e.name === "CastError") {
+      if (e.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Failed Request: Invalid data provided." });
@@ -135,4 +152,19 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-module.exports = { getCurrentUser, login, createUser };
+// GET /users -- REMOVE
+/*
+const getUsers = (req, res) => {
+  console.log("GET users");
+  User.find({})
+    .then((users) => res.send(users))
+    .catch((e) => {
+      console.error(e);
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
+    });
+};
+*/
+
+module.exports = { getCurrentUser, updateCurrentUser, login, createUser };

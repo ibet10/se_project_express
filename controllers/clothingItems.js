@@ -5,6 +5,7 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 // POST /item
@@ -54,11 +55,23 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  console.log(itemId);
+  const userId = req.user._id;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
-    .then((item) => res.send({ data: item }))
+    .then((item) => {
+      if (!item.owner.equals(userId)) {
+        return res
+          .status(FORBIDDEN)
+          .send({ message: "Failed Request: Request Not Authorized." });
+      }
+
+      return ClothingItem.findByIdAndDelete(itemId).then(() =>
+        res
+          .status(200)
+          .send({ message: "Request Successful: Item has been deleted." })
+      );
+    })
     .catch((e) => {
       console.error(e);
       if (e.name === "DocumentNotFoundError") {
@@ -76,6 +89,33 @@ const deleteItem = (req, res) => {
       });
     });
 };
+/*
+const deleteItem = (req, res) => {
+  const { itemId } = req.params;
+  console.log(itemId);
+  const userId = req.user._id;
+
+  ClothingItem.findByIdAndDelete(itemId)
+    .orFail()
+    .then((item) => res.send({ data: item }))
+    .catch((e) => {
+      console.error(e);
+      if (e.name === "DocumentNotFoundError") {
+        return res
+          .status(NOT_FOUND)
+          .send({ message: "Failed Request: Item not found." });
+      }
+      if (e.name === "CastError") {
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
+      }
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server."
+      });
+    });
+};
+*/
 
 // UPDATE / like item
 
