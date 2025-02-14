@@ -129,20 +129,27 @@ const updateCurrentUser = (req, res) => {
   const { name, avatar } = req.body;
   const { _id: userId } = req.user;
 
+  if (!name && !avatar) {
+    return res
+      .status(BAD_REQUEST)
+      .send({ message: "Failed Request: At least one field must be updated." });
+  }
+
   User.findByIdAndUpdate(
     userId,
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .orFail()
-    .then((user) => res.send(user))
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "DocumentNotFoundError") {
+    .then((user) => {
+      if (!user) {
         return res
           .status(NOT_FOUND)
           .send({ message: "Failed Request: User not found." });
       }
+      return res.send(user);
+    })
+    .catch((e) => {
+      console.error(e);
       if (e.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)
