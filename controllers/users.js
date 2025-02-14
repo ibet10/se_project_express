@@ -135,7 +135,7 @@ const updateCurrentUser = (req, res) => {
       .send({ message: "Failed Request: At least one field must be updated." });
   }
 
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     userId,
     { name, avatar },
     { new: true, runValidators: true }
