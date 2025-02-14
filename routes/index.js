@@ -8,10 +8,8 @@ const { createUser, login } = require("../controllers/users");
 
 const { NOT_FOUND } = require("../utils/errors");
 
-/*
 router.use("/users", userRouter);
 router.use("/items", itemRouter);
-*/
 
 router.post("/signin", login);
 router.post("/signup", createUser);
