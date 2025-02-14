@@ -14,7 +14,7 @@ const {
   INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
 
-// POST /user -- UPDATED (underconstruction)
+// POST /user -- UPDATED
 
 const createUser = (req, res) => {
   console.log("Create user");
@@ -23,13 +23,15 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-    .then((user) => res.status(CREATED).send(user))
+    .then(({ _id, name, avatar, email }) =>
+      res.status(CREATED).send({ _id, name, avatar, email })
+    )
     .catch((e) => {
       console.error(e);
       if (e.code === 11000) {
         return res
           .status(CONFLICT)
-          .send({ message: "Failed Request: Existing email." });
+          .send({ message: "Failed Request: Email already exists." });
       }
       if (e.name === "ValidationError") {
         return res
@@ -42,7 +44,7 @@ const createUser = (req, res) => {
     });
 };
 
-// Login Controller (underconstruction)
+// LOGIN
 
 const login = (req, res) => {
   const { email, password } = req.body;
@@ -72,7 +74,7 @@ const login = (req, res) => {
 // GET /:userId
 
 const getCurrentUser = (req, res) => {
-  console.log("GET user current user");
+  console.log("GET current user");
   const { _id: userId } = req.user;
 
   User.findById(userId)

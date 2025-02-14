@@ -2,6 +2,8 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 
+const cors = require("cors");
+
 const mainRouter = require("./routes/index");
 
 const { PORT = 3001 } = process.env;
@@ -12,7 +14,7 @@ mongoose.set("strictQuery", true); // Set because of: (node:14092) [MONGOOSE] De
 const app = express();
 
 app.use(express.json());
-
+app.use(cors());
 // HARDCODED AUTHORIZATION -- REMOVE
 /*
 app.use((req, res, next) => {
@@ -34,3 +36,5 @@ app.use("/", mainRouter);
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
 });
+
+module.exports = app;
