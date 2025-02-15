@@ -32,7 +32,7 @@ const createUser = (req, res) => {
     .then((user) => {
       const createNewUser = user.toObject();
       // delete the password
-      delete createUser.password;
+      delete createNewUser.password;
       return res.status(CREATED).send(createNewUsers);
     })
     .catch((e) => {
