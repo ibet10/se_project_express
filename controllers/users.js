@@ -18,6 +18,42 @@ const {
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
+  // check if the user exists
+  User.findOne({ email })
+    .then((existingUser) => {
+      if (existingUser) {
+        const error = new Error("Duplicated");
+        error.code = 11000;
+        throw error;
+      }
+      return bcrypt.hash(password, 10);
+    })
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
+    .then((user) => {
+      const createNewUser = user.toObject();
+      // delete the password
+      delete createUser.password;
+      return res.status(CREATED).send(createNewUsers);
+    })
+    .catch((e) => {
+      console.error(e);
+      if (e.code === 11000) {
+        return res
+          .status(CONFLICT)
+          .send({ message: "Failed Request: Email already exists." });
+      }
+      if (e.name === "ValidationError") {
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Failed Request: Invalid data provided." });
+      }
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: "Failed Request: An error has occurred on the server.",
+      });
+    });
+};
+/*const createUser = (req, res) => {
+  const { name, avatar, email, password } = req.body;
 
   // check if the user exists
   User.findOne({ email })
@@ -55,6 +91,7 @@ const createUser = (req, res) => {
       });
     });
 };
+*/
 
 // LOGIN
 
