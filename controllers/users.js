@@ -26,12 +26,12 @@ const createUser = (req, res) => {
   }
 
   // check if the user exists
-  User.findOne({ email })
+  return User.findOne({ email })
     .then((existingUser) => {
       if (existingUser) {
         const error = new Error("Duplicated");
         error.code = 11000;
-        throw error;
+        return Promise.reject(error);
       }
       return bcrypt.hash(password, 10);
     })
