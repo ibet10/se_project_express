@@ -23,9 +23,10 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-    .then(({ _id, name, avatar, email }) =>
-      res.status(CREATED).send({ _id, name, avatar, email })
-    )
+    .then((user) => {
+      const { _id, name, avatar, email } = user.toObject();
+      return res.status(CREATED).send({ _id, name, avatar, email });
+    })
     .catch((e) => {
       console.error(e);
       if (e.code === 11000) {
