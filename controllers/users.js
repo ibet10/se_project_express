@@ -17,15 +17,26 @@ const {
 // POST /user -- UPDATED
 
 const createUser = (req, res) => {
-  console.log("Create user");
   const { name, avatar, email, password } = req.body;
 
-  bcrypt
-    .hash(password, 10)
+  // check if the user exists
+  User.findOne({ email })
+    .then((existingUser) => {
+      if (existingUser) {
+        const error = new Error("Duplicated");
+        error.code = 11000;
+        throw error;
+      }
+      return bcrypt.hash(password, 10);
+    })
+
     .then((hash) => User.create({ name, avatar, email, password: hash }))
+
     .then((user) => {
-      const { _id, name, avatar, email } = user.toObject();
-      return res.status(CREATED).send({ _id, name, avatar, email });
+      const createUser = user.toObject();
+      // delete the password
+      delete createUser.password;
+      return res.status(CREATED).send(createUser);
     })
     .catch((e) => {
       console.error(e);
@@ -64,8 +75,11 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((e) => {
-      res.status(UNAUTHORIZED).send({ message: e.message });
       console.error(e);
+      if (e.message === "Incorrect email or password") {
+        res.status(UNAUTHORIZED).send({ message: e.message });
+      }
+
       return res.status(INTERNAL_SERVER_ERROR).send({
         message: "Failed Request: An error has occurred on the server.",
       });
