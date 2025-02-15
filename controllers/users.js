@@ -18,6 +18,13 @@ const {
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
+
+  if (!name || !avatar || !email || !password) {
+    return res
+      .status(BAD_REQUEST)
+      .send({ message: "Failed Request: Invalid data provided." });
+  }
+
   // check if the user exists
   User.findOne({ email })
     .then((existingUser) => {
