@@ -30,10 +30,10 @@ const createUser = (req, res) => {
     })
     .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
-      const createUser = user.toObject();
+      const createdUser = user.toObject();
       // delete the password
-      delete createUser.password;
-      return res.status(CREATED).send(createUser);
+      delete createdUser.password;
+      return res.status(CREATED).send(createdUser);
     })
     .catch((e) => {
       console.error(e);
@@ -74,7 +74,7 @@ const login = (req, res) => {
     .catch((e) => {
       console.error(e);
       if (e.message === "Incorrect email or password") {
-        res.status(UNAUTHORIZED).send({ message: e.message });
+        return res.status(UNAUTHORIZED).send({ message: e.message });
       }
 
       return res.status(INTERNAL_SERVER_ERROR).send({
