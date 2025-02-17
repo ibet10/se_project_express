@@ -89,33 +89,6 @@ const deleteItem = (req, res) => {
       });
     });
 };
-/*
-const deleteItem = (req, res) => {
-  const { itemId } = req.params;
-  console.log(itemId);
-  const userId = req.user._id;
-
-  ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
-    .then((item) => res.send({ data: item }))
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "Failed Request: Item not found." });
-      }
-      if (e.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Failed Request: Invalid data provided." });
-      }
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: "Failed Request: An error has occurred on the server."
-      });
-    });
-};
-*/
 
 // UPDATE / like item
 

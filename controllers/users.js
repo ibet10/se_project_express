@@ -116,32 +116,6 @@ const getCurrentUser = (req, res) => {
       });
     });
 };
-/*
-const getUser = (req, res) => {
-  console.log("GET user by Id");
-  const { userId } = req.params;
-
-  User.findById(userId)
-    .orFail()
-    .then((user) => res.send(user))
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "Failed Request: User not found." });
-      }
-      if (e.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Failed Request: Invalid data provided." });
-      }
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: "Failed Request: An error has occurred on the server.",
-      });
-    });
-};
-*/
 
 // PATCH /users/me — update profile
 
@@ -181,20 +155,5 @@ const updateCurrentUser = (req, res) => {
       });
     });
 };
-
-// GET /users -- REMOVE
-/*
-const getUsers = (req, res) => {
-  console.log("GET users");
-  User.find({})
-    .then((users) => res.send(users))
-    .catch((e) => {
-      console.error(e);
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: "Failed Request: An error has occurred on the server.",
-      });
-    });
-};
-*/
 
 module.exports = { getCurrentUser, updateCurrentUser, login, createUser };
