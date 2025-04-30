@@ -6,6 +6,8 @@ const cors = require("cors");
 
 const mainRouter = require("./routes/index");
 
+const errorHandler = require("./middleware/error-handler");
+
 const { PORT = 3001 } = process.env;
 
 mongoose.set("strictQuery", true); // Set because of: (node:14092) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7.
@@ -24,6 +26,8 @@ mongoose
   .catch(console.error);
 
 app.use("/", mainRouter);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
