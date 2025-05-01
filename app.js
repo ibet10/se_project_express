@@ -8,6 +8,8 @@ const mainRouter = require("./routes/index");
 
 const errorHandler = require("./middleware/error-handler");
 
+const { errors } = require("celebrate");
+
 const { PORT = 3001 } = process.env;
 
 mongoose.set("strictQuery", true); // Set because of: (node:14092) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7.
@@ -26,6 +28,8 @@ mongoose
   .catch(console.error);
 
 app.use("/", mainRouter);
+
+app.use(errors());
 
 app.use(errorHandler);
 
