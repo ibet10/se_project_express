@@ -10,6 +10,8 @@ const errorHandler = require("./middleware/error-handler");
 
 const { errors } = require("celebrate");
 
+const { requestLogger, errorLogger } = require("./middleware/logger");
+
 const { PORT = 3001 } = process.env;
 
 mongoose.set("strictQuery", true); // Set because of: (node:14092) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7.
@@ -17,8 +19,9 @@ mongoose.set("strictQuery", true); // Set because of: (node:14092) [MONGOOSE] De
 
 const app = express();
 
-app.use(express.json());
-app.use(cors());
+app.use(express.json()); // parse JSON data sent in the request body. Handle JSON-encoded data
+
+app.use(cors()); // enable secure cross-origin resource sharing (CORS) requests and data transfers between browsers and servers
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
@@ -27,11 +30,15 @@ mongoose
   })
   .catch(console.error);
 
-app.use("/", mainRouter);
+app.use(requestLogger); // Enable the request logger before all route handlers
 
-app.use(errors());
+app.use("/", mainRouter); // Route handler
 
-app.use(errorHandler);
+app.use(errorLogger); // Enable errorLogger after the route handler and before the error handlers
+
+app.use(errors()); // Celebrate Error Handler
+
+app.use(errorHandler); // Centralized Error handler
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
