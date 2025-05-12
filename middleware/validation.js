@@ -27,9 +27,14 @@ module.exports.validateCardBody = celebrate({
       "string.empty": 'The "name" field must be filled in',
     }),
 
-    avatar: Joi.string().required().custom(validateURL).messages({
-      "string.empty": 'The "Avatar URL" field must be filled in',
-      "string.uri": 'the "Avatar URL" field must be a valid url',
+    imageUrl: Joi.string().required().custom(validateURL).messages({
+      "string.empty": 'The "Image" field must be filled in',
+      "string.uri": 'the "Image" field must be a valid url',
+    }),
+
+    weather: Joi.string().required().messages({
+      "string.empty": 'The "Weather Type" field must be filled in',
+      "any.required": "Weather type is required",
     }),
   }),
 });
