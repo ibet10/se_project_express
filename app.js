@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 
 const cors = require("cors");
 
+const helmet = require("helmet");
+
 const { errors } = require("celebrate");
 
 const mainRouter = require("./routes/index");
@@ -13,6 +15,8 @@ const mainRouter = require("./routes/index");
 const errorHandler = require("./middleware/error-handler");
 
 const { requestLogger, errorLogger } = require("./middleware/logger");
+
+const limiter = require("./middleware/rateLimiter");
 
 const { PORT = 3001 } = process.env;
 
@@ -24,6 +28,10 @@ const app = express();
 app.use(express.json()); // parse JSON data sent in the request body. Handle JSON-encoded data
 
 app.use(cors()); // enable secure cross-origin resource sharing (CORS) requests and data transfers between browsers and servers
+
+app.use(helmet()); // protects app from some well-known web vulnerabilities by setting HTTP headers appropriately. Place after express.json() and cors() and before route handlers
+
+app.use(limiter); // basic rate-limiting middleware for Express. Use to limit repeated requests to public APIs and/or endpoints such as password reset
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
