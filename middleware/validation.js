@@ -62,7 +62,7 @@ module.exports.validateUserBody = celebrate({
   }),
 });
 
-//Login Authentication validation
+// Login Authentication validation
 module.exports.validateLoginBody = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email().messages({

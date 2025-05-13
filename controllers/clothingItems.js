@@ -1,7 +1,8 @@
 const ClothingItem = require("../models/clothingItems");
 
+const { CREATED } = require("../utils/errors");
+
 const {
-  CREATED,
   BadRequestError,
   ForbiddenError,
   NotFoundError,
@@ -55,11 +56,11 @@ const deleteItem = (req, res, next) => {
         return;
       }
 
-      return ClothingItem.findByIdAndDelete(itemId).then(() =>
+      ClothingItem.findByIdAndDelete(itemId).then(() => {
         res
           .status(200)
-          .send({ message: "Request Successful: Item has been deleted." })
-      );
+          .send({ message: "Request Successful: Item has been deleted." });
+      });
     })
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {

@@ -5,11 +5,11 @@ const User = require("../models/user");
 
 const { JWT_SECRET } = require("../utils/config");
 
+const { CREATED } = require("../utils/statusCodes");
+
 const {
-  CREATED,
   BadRequestError,
   UnauthorizedError,
-  //ForbiddenError,
   NotFoundError,
   ConflictError,
   InternalServerError,
@@ -114,7 +114,7 @@ const updateCurrentUser = (req, res, next) => {
         next(new NotFoundError("User not found."));
         return;
       }
-      return res.send(user);
+      res.send(user);
     })
     .catch((e) => {
       if (e.name === "ValidationError") {
