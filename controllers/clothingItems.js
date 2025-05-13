@@ -1,6 +1,6 @@
 const ClothingItem = require("../models/clothingItems");
 
-const { CREATED } = require("../utils/errors");
+const { CREATED } = require("../utils/statusCodes");
 
 const {
   BadRequestError,
