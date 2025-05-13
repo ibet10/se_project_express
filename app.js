@@ -34,6 +34,13 @@ mongoose
 
 app.use(requestLogger); // Enable the request logger before all route handlers
 
+// server crash testing - REMOVE AFTER APPROVED
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 app.use("/", mainRouter); // Route handler
 
 app.use(errorLogger); // Enable errorLogger after the route handler and before the error handlers

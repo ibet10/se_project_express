@@ -19,3 +19,10 @@ This is a an introductory back-end project focused on the development of a RESTf
 `npm run start` — to launch the server
 
 `npm run dev` — to launch the server with the hot reload feature
+
+## Accessing the Application
+
+The application is deployed and can be accessed at:
+
+- Frontend: https://wtwr-instance.raspberryip.com
+- Backend: https://api.wtwr-instance.raspberryip.com
